@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { Alert, Button, Card, Icon, Pane, Heading, FormField, TextInputField, Spinner, Paragraph, majorScale } from 'evergreen-ui'
+import React, { useMemo, useState } from 'react'
+import { Alert, Button, Card, Icon, Pane, Heading, TextInputField, Spinner, Paragraph, majorScale } from 'evergreen-ui'
 import axios from 'axios'
 
-function Home () {
+function TalkCreator () {
   const [ isLoading, setIsLoading ] = useState(false)
   const [ error, setError ] = useState()
   const [ name, setName ] = useState()
-  const [ isNameValid, setIsNameValid ] = useState(true)
+  const isNameValid = useMemo(() => validateName(name), [name])
   const [ speaker, setSpeaker ] = useState()
-  const [ isSpeakerValid, setIsSpeakerValid ] = useState(true)
+  const isSpeakerValid = useMemo(() => validateSpeaker(speaker), [speaker])
   const [ startTime, setStartTime ] = useState(new Date(Date.now()))
   const [ createdTalk, setCreatedTalk ] = useState()
 
@@ -17,12 +17,12 @@ function Home () {
     <Pane id="createTalkForm" marginBottom="40px">
       <TextInputField
         required label="Name" value={name || ''}
-        onChange={e => { setName(e.target.value); setIsNameValid(validateName(e.target.value)); }}
+        onChange={e => setName(e.target.value)}
         validationMessage={ isNameValid ? undefined : "Must be 10 to 80 characters long" }
       />
       <TextInputField
         isInvalid={!isSpeakerValid} required label="Speaker" value={speaker || ''}
-        onChange={e => { setSpeaker(e.target.value); setIsSpeakerValid(validateSpeaker(e.target.value)); }}
+        onChange={e => setSpeaker(e.target.value)}
       />
       <TextInputField type="datetime-local"
         required label="Start time" value={startTime || ''}
@@ -31,7 +31,7 @@ function Home () {
 
       <Button appearance="primary"
         disabled={!isNameValid || !isSpeakerValid}
-        onClick={() => { setIsLoading(true); invokeCreateCallApi(name, speaker, startTime)
+        onClick={() => { setIsLoading(true);  setError(); invokeCreateCallApi(name, speaker, startTime)
           .then(result => setCreatedTalk(result.data))
           .catch(setError)
           .finally(() => setIsLoading(false))
@@ -62,7 +62,7 @@ function Talk({name, speaker, startTime, deleteOperation, onDelete}) {
       <Heading size={400} marginBottom="8px">by {speaker}</Heading>
       <Paragraph marginBottom="8px" size={400}><Icon icon="time" /> {new Date(startTime).toGMTString()}</Paragraph>
       <Pane marginBottom="8px">
-        { deleteOperation && <Button appearance="primary" intent="danger" onClick={() => deleteTalk(name).then(onDelete).catch(setError)}>Delete</Button>}
+        { deleteOperation && <Button appearance="primary" intent="danger" onClick={() => deleteTalk(name).then(onDelete).catch(setError)}  marginRight="16px">Delete</Button>}
       </Pane>
       { error && <Alert intent="danger" title={error.message}/> }
     </Card>
@@ -83,4 +83,4 @@ function deleteTalk(name) {
   return axios.delete(`http://localhost:8080/talk/${name}`)
 }
 
-export default Home
+export default TalkCreator

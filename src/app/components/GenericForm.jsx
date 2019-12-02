@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Heading, Pane, Select, Switch, TextInput, majorScale } from 'evergreen-ui';
 
 import ajv from '../../library/services/Ajv';
@@ -8,8 +8,15 @@ import { capitalize, spaceCamelCaseWord, stateSetter } from '../utils/javascript
 // TODO: display an error message when required as TextInputField does
 // TODO: show required fields close to the label
 
-const GenericForm = ({values, setter, documentation}) => {
-  const [ errors, setErrors ] = useState({}) 
+const GenericForm = ({text, values, setter, documentation, setHasError}) => {
+  const [ errors, setErrors ] = useState({})
+  
+  useEffect(() => {
+      if (setHasError) {
+        setHasError(Object.values(errors).find(a => a !== undefined) !== undefined)
+      }
+    }, [errors, setHasError]
+  )
   
   if (documentation === undefined || documentation === [])
     return null
@@ -66,13 +73,14 @@ function SelectInput({schema, value, setValue, error, setError}) {
         width="100%"
         onChange={(e) => onChange(e.target.value)}
       >
+        <option disabled={schema.required}>No value</option>
         { options.map(option => <option key={option} value={option}>{option}</option>) }
       </Select>
   } else {
     return <TextInput
         isInvalid={error !== undefined}
         value={value || ''}
-        type={schema.format}
+        type={jsonSchemaToHtmlFormat(schema.format)}
         width="100%"
         onChange={(e) => onChange(e.target.value)}
       />
@@ -88,6 +96,16 @@ function _validateValue(value, schema) {
   const valid = validate(val);
   
   return [val, valid ? undefined : ajv.errorsText(validate.errors)];
+}
+
+function jsonSchemaToHtmlFormat(format) {
+  if (format === undefined) {
+    return undefined
+  } else if (format === 'datetime') {
+    return 'datetime-local'
+  } else {
+    return format
+  }
 }
 
 export default GenericForm

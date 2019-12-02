@@ -31,6 +31,7 @@ export function useCaller(parameters, callFct) {
     const call = async () => {
       setIsLoading(true)
       setCallAlreadyTriggered(true)
+      setError()
       try {
         const data = await callFct(parameters)
         setData(data)

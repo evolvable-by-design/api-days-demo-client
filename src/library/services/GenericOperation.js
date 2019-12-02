@@ -120,7 +120,8 @@ export class GenericOperationBuilder {
     const maybeOperation = this.apiDocumentation.findOperation(actionKey)
 
     if (maybeOperation === undefined) 
-      throw new NotFoundOperation()
+      return undefined
+      // throw new NotFoundOperation()
     
     return this.fromOperation(maybeOperation)
   }

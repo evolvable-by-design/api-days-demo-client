@@ -87,8 +87,12 @@ class SemanticData {
 
   getRelation(semanticRelation) {
     const hypermediaControl = this._findRelation(semanticRelation);
-    const hypermediaControlKey = hypermediaControl[0];
-    return this._getRelation(hypermediaControlKey, true)
+    if (hypermediaControl === undefined) {
+      return undefined
+    } else { 
+      const hypermediaControlKey = hypermediaControl[0];
+      return this._getRelation(hypermediaControlKey, true)
+    }
   }
 
   _getRelation(hypermediaControlKey, addToReadList) {
@@ -99,7 +103,6 @@ class SemanticData {
       const links = this.value._links || []
       const controlFromPayload = links[hypermediaControlKey]
         || links.find(control => control['relation'] === hypermediaControlKey)
-      
       const operation = notResolvedOperation ? this.apiDocumentation.findOperationById(notResolvedOperation.operationId) : undefined
 
       if (operation === undefined) {

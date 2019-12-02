@@ -7,7 +7,7 @@ import GenericForm from './GenericForm'
 import { capitalize, spaceCamelCaseWord } from '../utils/javascriptUtils'
 import { useAppContextState } from '../context/AppContext'
 
-const ActionDialog = ({ isShown, title, operationSchema, onSuccessCallback, onCloseComplete }) => {
+const ActionDialog = ({ isShown, title, operationSchema, onSuccessCallback, onCloseComplete, setHasError }) => {
   const { genericOperationBuilder } = useAppContextState()
   const operation = genericOperationBuilder.fromOperation(operationSchema)
   const { parametersDetail, makeCall, isLoading, data, error, success } = useOperation(operation)
@@ -22,7 +22,8 @@ const ActionDialog = ({ isShown, title, operationSchema, onSuccessCallback, onCl
     onConfirm={makeCall}
     onCloseComplete={onCloseComplete}
   >
-    <GenericForm {...parametersDetail} />
+    <GenericForm {...parametersDetail} setHasError={setHasError} />
+    { success && <Alert intent="success" title={'Success'} /> }
     { error && <Alert intent="danger" title={error.message || error} /> }
   </Dialog>
 }
