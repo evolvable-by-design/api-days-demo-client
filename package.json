@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "ajv": "^6.10.2",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "evergreen-ui": "^4.19.1",
     "qs": "^6.9.1",
     "react": "16.9.0",
